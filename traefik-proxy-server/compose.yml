@@ -1,6 +1,6 @@
 name: traefik-proxy-server
 services:
-  traefik:
+  app:
     image: traefik:v2.5
     command:
       - "--api.insecure=false"
