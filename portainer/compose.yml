@@ -1,5 +1,4 @@
-version: '3.7'
-
+name: panel-gui-app
 services:
   portainer:
     image: portainer/portainer-ce:latest

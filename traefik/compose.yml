@@ -1,5 +1,4 @@
-version: '3.7'
-
+name: proxy-reverse-app
 services:
   traefik:
     image: traefik:v2.4
