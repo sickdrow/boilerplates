@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.prestashop.tls.certresolver=myresolver"
       - "traefik.http.services.prestashop.loadbalancer.server.port=80"
     volumes:
-      - prestashop_data:/var/www/html
+      - app_data:/var/www/html
       - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
     networks:
       - bridge-proxy
