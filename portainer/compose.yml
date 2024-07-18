@@ -1,6 +1,6 @@
-name: panel-gui-app
+name: portainer
 services:
-  portainer:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,12 +12,12 @@ services:
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "portainer_data:/data"
+      - "app_data:/data"
     networks:
       - bridge-proxy
 
 volumes:
-  portainer_data:
+  app_data:
 
 networks:
   bridge-proxy:
