@@ -1,7 +1,9 @@
 name: proxy-reverse-app
 services:
   traefik:
-    image: traefik:v2.4
+    build:
+      context: .
+      dockerfile: Dockerfile
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
