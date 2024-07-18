@@ -1,0 +1,38 @@
+name: prestashop
+
+services:
+  app:
+    build:
+      context: app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      # Database configuration
+      DB_SERVER: db
+      DB_NAME: prestashop
+      DB_USER: prestashop
+      DB_PASSWORD: prestashop
+      # Optional settings
+      PS_DEV_MODE: "1"
+      PS_INSTALL_AUTO: "1"
+    volumes:
+      - app-data:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: db
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: prestashop
+      MYSQL_DATABASE: prestashop
+      MYSQL_USER: prestashop
+      MYSQL_PASSWORD: prestashop
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  app-data:
+  db-data:
