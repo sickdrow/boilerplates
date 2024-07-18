@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  saleor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saleor
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "saleor.wsgi:application"]
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/saleor
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=False
+      - SECRET_KEY=supersecretkey
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - bridge-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.saleor.rule=Host(`yourdomain.com`)"
+      - "traefik.http.routers.saleor.entrypoints=web"
+      - "traefik.http.services.saleor.loadbalancer.server.port=8000"
+
+  postgres:
+    image: postgres:13
+    container_name: saleor_postgres
+    environment:
+      - POSTGRES_DB=saleor
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bridge-proxy
+
+  redis:
+    image: redis:6
+    container_name: saleor_redis
+    networks:
+      - bridge-proxy
+
+volumes:
+  postgres_data:
+
+networks:
+  bridge-proxy:
+    external: true
