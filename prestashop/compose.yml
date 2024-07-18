@@ -1,0 +1,40 @@
+name: shop-app-prod
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: prestashop
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - bridge-proxy
+
+  prestashop:
+    image: prestashop/prestashop:latest
+    environment:
+      - PS_INSTALL_AUTO=1
+      - DB_SERVER=db
+      - DB_NAME=prestashop
+      - DB_USER=root
+      - DB_PASSWD=rootpassword
+      - ADMIN_MAIL=admin@example.com
+      - ADMIN_PASSWD=adminpassword
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prestashop.rule=Host(`prestashop.example.com`)"
+      - "traefik.http.routers.prestashop.entrypoints=websecure"
+      - "traefik.http.routers.prestashop.tls.certresolver=myresolver"
+      - "traefik.http.services.prestashop.loadbalancer.server.port=80"
+    volumes:
+      - prestashop_data:/var/www/html
+    networks:
+      - bridge-proxy
+
+networks:
+  bridge-proxy:
+    external: true
+
+volumes:
+  db_data:
+  prestashop_data:
