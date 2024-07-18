@@ -14,7 +14,7 @@ services:
     image: prestashop/prestashop:latest
     environment:
       - PS_INSTALL_AUTO=1
-      - PS_HOST=localhost
+      - PS_DOMAIN=prestashop.example.com
       - DB_SERVER=db
       - DB_NAME=prestashop
       - DB_USER=root
