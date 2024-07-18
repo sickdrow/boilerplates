@@ -1,7 +1,7 @@
-version: '3.8'
+name: proxmox
 
 services:
-  proxmox:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -18,11 +18,11 @@ services:
       - "traefik.http.routers.proxmox.tls.certresolver=myresolver"
       - "traefik.http.services.proxmox.loadbalancer.server.port=8006"
     volumes:
-      - proxmox_data:/var/lib/pve
+      - app_data:/var/lib/pve
 
 networks:
   bridge-proxy:
     external: true
 
 volumes:
-  proxmox_data:
+  app_data:
