@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - bridge-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.yourdomain.com`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=yourpassword  # Zmień na swoje hasło admina
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+networks:
+  bridge-proxy:
+    external: true
+
+volumes:
+  grafana_data:

@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=your-access-key
+      - MINIO_ROOT_PASSWORD=your-secret-key
+    volumes:
+      - minio_data:/data
+    networks:
+      - bridge-proxy
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`minio.yourdomain.com`)"
+      - "traefik.http.routers.minio.entrypoints=web"
+      - "traefik.http.routers.minio-secure.rule=Host(`minio.yourdomain.com`)"
+      - "traefik.http.routers.minio-secure.entrypoints=websecure"
+      - "traefik.http.routers.minio-secure.tls=true"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.http.routers.minio-console.rule=Host(`console.minio.yourdomain.com`)"
+      - "traefik.http.routers.minio-console.entrypoints=web"
+      - "traefik.http.routers.minio-console-secure.rule=Host(`console.minio.yourdomain.com`)"
+      - "traefik.http.routers.minio-console-secure.entrypoints=websecure"
+      - "traefik.http.routers.minio-console-secure.tls=true"
+      - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
+
+networks:
+  bridge-proxy:
+    external: true
+
+volumes:
+  minio_data:
+    driver: local
