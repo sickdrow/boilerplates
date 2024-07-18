@@ -1,4 +1,4 @@
-name: shop-app-prod
+name: prestashop
 services:
   db:
     image: mysql:5.7
@@ -10,7 +10,7 @@ services:
     networks:
       - bridge-proxy
 
-  prestashop:
+  app:
     image: prestashop/prestashop:latest
     environment:
       - PS_INSTALL_AUTO=1
@@ -28,6 +28,7 @@ services:
       - "traefik.http.services.prestashop.loadbalancer.server.port=80"
     volumes:
       - prestashop_data:/var/www/html
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
     networks:
       - bridge-proxy
 
@@ -37,4 +38,4 @@ networks:
 
 volumes:
   db_data:
-  prestashop_data:
+  app_data:
