@@ -16,6 +16,11 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-letsencrypt:/letsencrypt"
+    networks:
+      - bridge-proxy
 
 volumes:
   traefik-letsencrypt:
+networks:
+  bridge-proxy:
+    external: true

@@ -1,8 +1,9 @@
 name: panel-gui-app
 services:
   portainer:
-    image: portainer/portainer-ce:latest
-    command: -H unix:///var/run/docker.sock
+    build:
+      context: .
+      dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`portainer.example.com`)"
@@ -12,6 +13,12 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "portainer_data:/data"
+    networks:
+      - bridge-proxy
 
 volumes:
   portainer_data:
+
+networks:
+  bridge-proxy:
+    external: true
