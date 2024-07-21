@@ -1,0 +1,66 @@
+name: mastodon
+
+services:
+  db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: mastodon_production
+      POSTGRES_USER: mastodon
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    networks:
+      - bridge-proxy
+
+  redis:
+    image: redis:6-alpine
+    volumes:
+      - ./redis:/data
+    networks:
+      - bridge-proxy
+
+  web:
+    image: tootsuite/mastodon:v3.5.3
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mastodon-web.rule=Host(`mastodon.example.com`)"
+      - "traefik.http.routers.mastodon-web.entrypoints=websecure"
+      - "traefik.http.routers.mastodon-web.tls.certresolver=myresolver"
+    volumes:
+      - ./public/system:/mastodon/public/system
+    command: bash -c "RAILS_ENV=production bundle exec rails s"
+    networks:
+      - bridge-proxy
+
+  streaming:
+    image: tootsuite/mastodon:v3.5.3
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mastodon-streaming.rule=Host(`streaming.mastodon.example.com`)"
+      - "traefik.http.routers.mastodon-streaming.entrypoints=websecure"
+      - "traefik.http.routers.mastodon-streaming.tls.certresolver=myresolver"
+    command: bash -c "NODE_ENV=production node ./streaming"
+    networks:
+      - bridge-proxy
+
+  sidekiq:
+    image: tootsuite/mastodon:v3.5.3
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    command: bash -c "RAILS_ENV=production bundle exec sidekiq"
+    networks:
+      - bridge-proxy
+
+networks:
+  bridge-proxy:
+    external: true
